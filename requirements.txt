@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+celery
+redis
+SQLAlchemy
+asyncpg
+alembic
+pydantic-settings
+python-dotenv
+google-generativeai
+PyGithub
+httpx
+pytest
+pytest-asyncio
+asgiref

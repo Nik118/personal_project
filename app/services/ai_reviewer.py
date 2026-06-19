@@ -1,0 +1,48 @@
+import google.generativeai as genai
+from app.core.config import settings
+import json
+
+genai.configure(api_key=settings.GEMINI_API_KEY)
+
+# Use the latest model
+model = genai.GenerativeModel("gemini-1.5-pro")
+
+class AIReviewerService:
+    
+    async def analyze_diff(self, diff_text: str) -> list[dict]:
+        """
+        Analyzes the PR diff and returns a list of actionable comments.
+        We ask the model to return JSON to make it parsable.
+        """
+        prompt = f"""
+        You are an expert Senior Staff Software Engineer. 
+        Review the following code diff and provide constructive, actionable feedback.
+        Only comment on significant issues: bugs, security vulnerabilities, performance issues, or major style violations.
+        
+        Return the response strictly as a JSON list of objects. Each object should have:
+        - "file_path": The path of the file being modified.
+        - "line_number": The specific line number in the NEW code where the comment applies.
+        - "comment": The review comment itself.
+        
+        If there are no significant issues, return an empty list [].
+        
+        Code Diff:
+        {diff_text}
+        """
+        
+        try:
+            response = await model.generate_content_async(prompt)
+            # Simple extraction in case the model wraps in ```json ... ```
+            content = response.text.strip()
+            if content.startswith("```json"):
+                content = content[7:-3]
+            elif content.startswith("```"):
+                content = content[3:-3]
+                
+            reviews = json.loads(content)
+            return reviews
+        except Exception as e:
+            print(f"Failed to parse AI response: {e}")
+            return []
+
+ai_reviewer = AIReviewerService()
