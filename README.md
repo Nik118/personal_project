@@ -48,13 +48,19 @@ Built with performance, concurrency, and security in mind, this project demonstr
    CELERY_RESULT_BACKEND=redis://localhost:6379/0
    ```
 
-3. **Run the FastAPI Server:**
+3. **Database Migrations:**
+   Ensure your PostgreSQL instance is running and the database `code_reviewer` exists. Then, apply the database schema migrations:
+   ```bash
+   alembic upgrade head
+   ```
+
+4. **Run the FastAPI Server:**
    ```bash
    uvicorn app.main:app --reload
    ```
    *The server will run on `http://127.0.0.1:8000`.*
 
-4. **Run the Celery Worker:**
+5. **Run the Celery Worker:**
    Open a new terminal window and start the background worker:
    ```bash
    celery -A app.worker.celery_app worker --loglevel=info
