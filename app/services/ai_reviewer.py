@@ -31,15 +31,13 @@ class AIReviewerService:
         """
         
         try:
-            response = await model.generate_content_async(prompt)
-            # Simple extraction in case the model wraps in ```json ... ```
-            content = response.text.strip()
-            if content.startswith("```json"):
-                content = content[7:-3]
-            elif content.startswith("```"):
-                content = content[3:-3]
-                
-            reviews = json.loads(content)
+            response = await model.generate_content_async(
+                prompt,
+                generation_config=genai.GenerationConfig(
+                    response_mime_type="application/json"
+                )
+            )
+            reviews = json.loads(response.text)
             return reviews
         except Exception as e:
             print(f"Failed to parse AI response: {e}")

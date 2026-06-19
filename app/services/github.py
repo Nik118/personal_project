@@ -36,12 +36,5 @@ class GitHubService:
             response = await client.post(url, headers=self.headers, json=payload)
             response.raise_for_status()
             return response.json()
-            
-    async def get_pr_commits(self, repo_name: str, pr_number: int) -> list:
-        url = f"{self.base_url}/repos/{repo_name}/pulls/{pr_number}/commits"
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url, headers=self.headers)
-            response.raise_for_status()
-            return response.json()
 
 github_service = GitHubService()

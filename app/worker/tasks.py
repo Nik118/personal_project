@@ -1,4 +1,3 @@
-import asyncio
 from asgiref.sync import async_to_sync
 from app.worker.celery_app import celery_app
 from app.services.github import github_service
