@@ -1,11 +1,9 @@
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from app.core.config import settings
 import json
 
-genai.configure(api_key=settings.GEMINI_API_KEY)
-
-# Use the latest model
-model = genai.GenerativeModel("gemini-1.5-pro")
+client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 class AIReviewerService:
     
@@ -31,9 +29,10 @@ class AIReviewerService:
         """
         
         try:
-            response = await model.generate_content_async(
-                prompt,
-                generation_config=genai.GenerationConfig(
+            response = await client.aio.models.generate_content(
+                model="gemini-1.5-pro",
+                contents=prompt,
+                config=types.GenerateContentConfig(
                     response_mime_type="application/json"
                 )
             )
