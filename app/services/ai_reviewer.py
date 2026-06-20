@@ -38,7 +38,13 @@ class AIReviewerService:
                 )
             )
             reviews = json.loads(response.text)
+            if not isinstance(reviews, list):
+                print("Warning: AI returned JSON, but it was not a list.")
+                return []
             return reviews
+        except json.JSONDecodeError as e:
+            print(f"Failed to decode AI JSON response: {e}")
+            return []
         except Exception as e:
             print(f"Failed to parse AI response: {e}")
             return []

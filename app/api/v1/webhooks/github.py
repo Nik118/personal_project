@@ -1,10 +1,13 @@
 import hmac
 import hashlib
 from fastapi import APIRouter, Request, HTTPException
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from app.core.config import settings
 from app.worker.tasks import process_pr_review
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 def verify_signature(payload_body: bytes, signature_header: str) -> bool:
     if not signature_header:
@@ -19,6 +22,7 @@ def verify_signature(payload_body: bytes, signature_header: str) -> bool:
     return hmac.compare_digest(expected_signature, signature_header)
 
 @router.post("/")
+@limiter.limit("5/minute")
 async def handle_github_webhook(request: Request):
     # Verify the payload signature
     signature = request.headers.get("X-Hub-Signature-256")
@@ -31,7 +35,11 @@ async def handle_github_webhook(request: Request):
     
     # We only care about pull request events
     if event_type == "pull_request":
-        payload = await request.json()
+        try:
+            payload = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid JSON payload")
+            
         action = payload.get("action")
         
         # Trigger review on open or synchronize (new commits)
