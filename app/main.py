@@ -13,7 +13,7 @@ app = FastAPI(
 
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore
 
 app.include_router(github.router, prefix=f"{settings.API_V1_STR}/webhooks/github", tags=["webhooks"])
 app.include_router(reviews.router, prefix=f"{settings.API_V1_STR}/reviews", tags=["analytics"])

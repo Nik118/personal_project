@@ -9,7 +9,7 @@ from app.worker.tasks import process_pr_review
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
-def verify_signature(payload_body: bytes, signature_header: str) -> bool:
+def verify_signature(payload_body: bytes, signature_header: str | None) -> bool:
     if not signature_header:
         return False
         
