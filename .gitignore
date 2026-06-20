@@ -33,3 +33,6 @@ pyrightconfig.json
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Documentation
+code_flow_guide.md
